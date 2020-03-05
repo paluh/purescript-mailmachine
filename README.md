@@ -4,7 +4,7 @@ Trivial `paluh/mailmachine` PureScript client.
 
 ## Usage
 
-If you have `mailmachine` up and running all you need is to push mail record into appropriate redis `queue`. Something like this should work:
+If you have `mailmachine` up and running all you need is to push mail record into the appropriate redis `queue`. Something like this should work:
 
 ```purescript
 module Main where
