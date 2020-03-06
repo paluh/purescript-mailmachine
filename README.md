@@ -11,34 +11,36 @@ module Main where
 
 import Prelude
 
+import Data.MediaType.Common (textHTML, textPlain)
 import Database.Redis (Config, defaultConfig) as Redis
 import Effect (Effect)
 import Effect.Aff (launchAff_)
 import Mailmachine (send) as Mailmachine
-import Node.Buffer.Immutable (fromString, toString) as Immutable
-import Node.Encoding (Encoding(Base64, UTF8))
+import Node.Buffer.Immutable (fromString) as Immutable
+import Node.Encoding (Encoding(UTF8))
 
 redisConfig ∷ Redis.Config
-redisConfig = Redis.defaultConfig { port = 6379 }
+redisConfig = Redis.defaultConfig { port = 8888 }
 
 main :: Effect Unit
 main = launchAff_ do
   let
-    mailQueue = "mails"
+    mailQueue = "mailmachine-dev"
+    encode s = Immutable.fromString s UTF8
 
-  Mailmachine.send
-    { redisConfig, mailQueue }
+  -- Text files and alternatives should be UTF-8 encoded
+  -- because mailmachine is doing some trickery to send them
+  -- without base64 encoding
+  Mailmachine.send { redisConfig, mailQueue }
     { attachments: [
       { file_name: "test.txt"
-      -- | A bit convoluted example of utf8 text file which is base64 encoded and send as attachment
-      , content: Immutable.toString Base64 (Immutable.fromString "File content" UTF8)
-      , mime: "text/plain"
+      , content: encode "File content"
+      , mime: textPlain
       }]
-    , body: "Hello from Purescript"
-    , from_email: "pidgin@example.com"
-    , recipients: ["recipient@example.com"]
+    , alternatives: [{ content: encode "<h1>Dzień dobry</h1>", mime: textHTML }]
+    , body: "Dzień dobry"
+    , from_email: "evil@spamthewholeworld.expert"
+    , recipients: ["receipient@example"]
     , subject: "Hello from Purescript!"
     }
-
-
 ```
