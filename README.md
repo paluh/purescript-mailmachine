@@ -34,16 +34,18 @@ main = launchAff_ do
     encode s = Immutable.fromString s UTF8
 
   Mailmachine.send { redisConfig, mailQueue }
-    { alternatives: [{ content: encode "<h1>Dzień dobry</h1>", mime: textHTML }]
+    { alternatives: [{ content: encode "Z poważaniem<br />Zespół spamthewholeworld.expert", mime: textHTML }]
     , attachments:
       [ { content: encode "File content"
         , fileName: "test.txt"
         , mime: textPlain
         }
       ]
-    , body: "Dzień dobry"
-    , fromEmail: EmailAddress { localPart: "evil", domainPart: "spamthewholeworld.expert" }
-    , recipients: NonEmptyArray.singleton $ EmailAddress { localPart: "paluh", domainPart: "sendmemorespam.com" }
-    , subject: "Hello from Purescript!"
+    , body: "Z poważaniem,\nZespół spamthewholeworld.expert"
+    , fromEmail: EmailAddress
+      { localPart: "evil", domainPart: "spamthewholeworld.expert" }
+    , recipients: NonEmptyArray.singleton $ EmailAddress
+      { localPart: "poor", domainPart: "idontlikespam.com" }
+    , subject: "Świeżutki SPAM!"
     }
 ```
