@@ -13,6 +13,7 @@ module Main where
 
 import Prelude
 
+import Data.Array.NonEmpty (singleton) as NonEmptyArray
 import Data.MediaType.Common (textHTML, textPlain)
 import Database.Redis (Config, defaultConfig) as Redis
 import Effect (Effect)
@@ -20,6 +21,7 @@ import Effect.Aff (launchAff_)
 import Mailmachine (send) as Mailmachine
 import Node.Buffer.Immutable (fromString) as Immutable
 import Node.Encoding (Encoding(UTF8))
+import Text.Email.Parser (EmailAddress(..))
 
 redisConfig ∷ Redis.Config
 redisConfig = Redis.defaultConfig { port = 8888 }
