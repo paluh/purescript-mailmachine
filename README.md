@@ -4,7 +4,9 @@ Trivial `paluh/mailmachine` PureScript client.
 
 ## Usage
 
-If you have `mailmachine` up and running all you need is to push mail record into the appropriate redis `queue`. Something like this should work:
+If you have `mailmachine` up and running all you need to do is to push `Mailmachine.Mail` record into it by using `send` function.
+
+Something like this should work:
 
 ```purescript
 module Main where
@@ -25,12 +27,10 @@ redisConfig = Redis.defaultConfig { port = 8888 }
 main :: Effect Unit
 main = launchAff_ do
   let
+    -- | Redis label for a given mailmachine queue
     mailQueue = "mailmachine-dev"
     encode s = Immutable.fromString s UTF8
 
-  -- Text files and alternatives should be UTF-8 encoded
-  -- because mailmachine is doing some trickery to send them
-  -- without base64 encoding
   Mailmachine.send { redisConfig, mailQueue }
     { attachments: [
       { file_name: "test.txt"
