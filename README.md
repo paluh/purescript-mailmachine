@@ -32,11 +32,12 @@ main = launchAff_ do
     encode s = Immutable.fromString s UTF8
 
   Mailmachine.send { redisConfig, mailQueue }
-    { attachments: [
-      { content: encode "File content"
-      , fileName: "test.txt"
-      , mime: textPlain
-      }]
+    { attachments:
+      [ { content: encode "File content"
+        , fileName: "test.txt"
+        , mime: textPlain
+        }
+      ]
     , alternatives: [{ content: encode "<h1>Dzień dobry</h1>", mime: textHTML }]
     , body: "Dzień dobry"
     , fromEmail: "evil@spamthewholeworld.expert"
