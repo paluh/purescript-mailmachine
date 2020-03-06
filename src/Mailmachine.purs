@@ -18,12 +18,12 @@ type Mail =
     }
   , attachments ∷ Array
     { content ∷ ImmutableBuffer
-    , file_name ∷ String
+    , fileName ∷ String
     , mime ∷ MediaType
     }
   , body ∷ String
   , recipients ∷ Array String
-  , from_email ∷ String
+  , fromEmail ∷ String
   , subject ∷ String
   }
 
@@ -36,8 +36,8 @@ type MailJson =
     , mime ∷ String
     }
   , body ∷ String
-  , recipients ∷ Array String
   , from_email ∷ String
+  , recipients ∷ Array String
   , subject ∷ String
   }
 
@@ -48,13 +48,18 @@ send { redisConfig, mailQueue } mail = Redis.withConnection redisConfig \conn �
     void $ o.put (encodeEmail mail)
   where
     outQueue = "hotqueue:" <> mailQueue
-    encodeAttachment a = a
-      { content = Immutable.toString Base64 a.content
-      , mime = unwrap a.mime
+    encodeAttachment a =
+      { content: Immutable.toString Base64 a.content
+      , file_name: a.fileName
+      , mime: unwrap a.mime
       }
     encodeAlternative a = [ Immutable.toString Base64 a.content, unwrap a.mime ]
-    encodeEmail m = m
-      { attachments = map encodeAttachment mail.attachments
-      , alternatives = map encodeAlternative mail.alternatives
+    encodeEmail m =
+      { attachments: map encodeAttachment m.attachments
+      , alternatives: map encodeAlternative m.alternatives
+      , body: m.body
+      , from_email: m.fromEmail
+      , recipients: m.recipients
+      , subject: m.subject
       }
 

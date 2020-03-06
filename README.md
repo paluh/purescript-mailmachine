@@ -33,13 +33,13 @@ main = launchAff_ do
 
   Mailmachine.send { redisConfig, mailQueue }
     { attachments: [
-      { file_name: "test.txt"
-      , content: encode "File content"
+      { content: encode "File content"
+      , fileName: "test.txt"
       , mime: textPlain
       }]
     , alternatives: [{ content: encode "<h1>Dzień dobry</h1>", mime: textHTML }]
     , body: "Dzień dobry"
-    , from_email: "evil@spamthewholeworld.expert"
+    , fromEmail: "evil@spamthewholeworld.expert"
     , recipients: ["receipient@example"]
     , subject: "Hello from Purescript!"
     }
