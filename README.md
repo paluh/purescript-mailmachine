@@ -41,7 +41,7 @@ main = launchAff_ do
     , alternatives: [{ content: encode "<h1>Dzień dobry</h1>", mime: textHTML }]
     , body: "Dzień dobry"
     , fromEmail: "evil@spamthewholeworld.expert"
-    , recipients: ["receipient@example"]
+    , recipients: ["receipient@poorspamreceipient.com"]
     , subject: "Hello from Purescript!"
     }
 ```
