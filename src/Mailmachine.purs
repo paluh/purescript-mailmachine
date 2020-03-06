@@ -2,6 +2,8 @@ module Mailmachine where
 
 import Prelude
 
+import Data.Array (fromFoldable) as Array
+import Data.Array.NonEmpty (NonEmptyArray)
 import Data.MediaType (MediaType)
 import Data.Newtype (unwrap)
 import Database.Redis (Config, withConnection) as Redis
@@ -10,6 +12,8 @@ import Effect.Aff (Aff)
 import Node.Buffer.Immutable (ImmutableBuffer)
 import Node.Buffer.Immutable (toString) as Immutable
 import Node.Encoding (Encoding(Base64))
+import Text.Email.Parser (EmailAddress)
+import Text.Email.Parser (toString) as Email
 
 type Mail =
   { alternatives ∷ Array
@@ -22,8 +26,8 @@ type Mail =
     , mime ∷ MediaType
     }
   , body ∷ String
-  , recipients ∷ Array String
-  , fromEmail ∷ String
+  , recipients ∷ NonEmptyArray EmailAddress
+  , fromEmail ∷ EmailAddress
   , subject ∷ String
   }
 
@@ -58,8 +62,8 @@ send { redisConfig, mailQueue } mail = Redis.withConnection redisConfig \conn �
       { attachments: map encodeAttachment m.attachments
       , alternatives: map encodeAlternative m.alternatives
       , body: m.body
-      , from_email: m.fromEmail
-      , recipients: m.recipients
+      , from_email: Email.toString m.fromEmail
+      , recipients: map Email.toString <<< Array.fromFoldable $ m.recipients
       , subject: m.subject
       }
 
