@@ -6,7 +6,7 @@ import Data.Array (fromFoldable) as Array
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.MediaType (MediaType)
 import Data.Newtype (unwrap)
-import Database.Redis (Config, withConnection) as Redis
+import Database.Redis (Connection) as Redis
 import Database.Redis.Hotqueue (Hotqueue, hotqueueJson)
 import Effect.Aff (Aff)
 import Node.Buffer.Immutable (ImmutableBuffer)
@@ -26,8 +26,8 @@ type Mail =
     , mime ∷ MediaType
     }
   , body ∷ String
-  , recipients ∷ NonEmptyArray EmailAddress
   , fromEmail ∷ EmailAddress
+  , recipients ∷ NonEmptyArray EmailAddress
   , subject ∷ String
   }
 
@@ -45,8 +45,8 @@ type MailJson =
   , subject ∷ String
   }
 
-send ∷ { redisConfig ∷ Redis.Config, mailQueue ∷ String } → Mail → Aff Unit
-send { redisConfig, mailQueue } mail = Redis.withConnection redisConfig \conn → do
+send ∷ { redis ∷ Redis.Connection, mailQueue ∷ String } → Mail → Aff Unit
+send { redis: conn, mailQueue } mail = do
     let
       (o ∷ Hotqueue _ _ (MailJson)) = hotqueueJson conn outQueue
     void $ o.put (encodeEmail mail)
